@@ -1,8 +1,14 @@
 # WPSS (WebPage Screen Saver)
 
-Display a web page as your screen saver.
+Display a web page as your screen saver. This is particularly useful as an information radiator for your projects.
 
-This is a clone of a project by a similar name [cwc/web-page-screensaver](https://github.com/cwc/web-page-screensaver) which has since been archived and probably no longer maintained. There are 3 pull requests pending and this project has taken the effective results of each and a few personal updates. In short, this is not my project; it is an updated and compiled work of other projects.
+If you are practicing DevOps, you probably want a monitor to show a variety of web pages containing build status, code coverage, backlog items, team metrics, and the like. These are often available as web pages, but there are few tools that can cycle through these pages easily. This tool allows you to setup a small Windows compute instance (physical or virtual) with a monitor in a prominent location and let the screen saver cycle through all the pages.
+
+## Credits
+
+This is a clone of a project by a similar name ([cwc/web-page-screensaver](https://github.com/cwc/web-page-screensaver)) by Cameron Currie which has since been archived and probably no longer maintained. There were 3 pull requests pending at the time this project was cloned and this project has taken the effective results of each and a few personal updates. See the updates section for details on who made what changes,
+
+In short, this is not my project; it is an updated and compiled work of other projects.
 
 ## Dependencies
 
@@ -21,8 +27,8 @@ This is a clone of a project by a similar name [cwc/web-page-screensaver](https:
 1. Clone or Download the repository
 1. Open a command prompt in the project folder and enter:
 `C:\Windows\Microsoft.NET\Framework\v4.0.30319\msbuild.exe Web-Page-Screensaver.csproj`
-1. In the folder bin\Debug\ rename Web-Page-Screensaver.exe to Web-Page-Screensaver.scr
-1. Right click Web-Page-Screensaver.scr to Test or Install. 
+1. In the folder `bin\Debug\` rename `Web-Page-Screensaver.exe` to `Web-Page-Screensaver.scr`
+1. Right click `Web-Page-Screensaver.scr` to Test or Install. 
 
 ## Updates
 1. Added build instructions for newbies to Csharp. - [topsrek](https://github.com/topsrek/web-page-screensaver)
