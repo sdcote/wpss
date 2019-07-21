@@ -44,5 +44,9 @@ Since the original procjec is archived (and essentially dormant) this project ha
 1. Replaced webbrowser with modern webview (uses Edge engine) - [webstylecenter](https://github.com/webstylecenter/web-page-screensaver)
 1. Removed multi-display support. Keeping project simple for DevOps use cases.
 
-Started a multi-display version of the project in the multi_display branch.
+### Multi-Display Support
+Started a multi-display version of the project in the `multi_display` branch. This version was causing several issues and moved for a separate branch for archiving.
 1. Fixing a crash an and UI issue - [carlossanlop](https://github.com/carlossanlop/web-page-screensaver)
+
+Multi-display support may be abandoned since there is no use case for it currently and the existing design seems to have intruduced a few bugs on some workstations. 
+
