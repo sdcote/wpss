@@ -1,4 +1,4 @@
-﻿namespace pl.polidea.lab.Web_Page_Screensaver
+﻿namespace coyote.wpss
 {
     partial class ScreensaverForm
     {
@@ -28,10 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.webBrowser = new System.Windows.Forms.WebBrowser();
             this.closeButton = new System.Windows.Forms.Button();
-            this.webView1 = new Microsoft.Toolkit.Forms.UI.Controls.WebView();
-            ((System.ComponentModel.ISupportInitialize)(this.webView1)).BeginInit();
             this.SuspendLayout();
+            // 
+            // webBrowser
+            // 
+            this.webBrowser.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.webBrowser.Location = new System.Drawing.Point(0, 0);
+            this.webBrowser.MinimumSize = new System.Drawing.Size(20, 20);
+            this.webBrowser.Name = "webBrowser";
+            this.webBrowser.Size = new System.Drawing.Size(284, 262);
+            this.webBrowser.TabIndex = 0;
             // 
             // closeButton
             // 
@@ -46,39 +54,28 @@
             this.closeButton.Visible = false;
             this.closeButton.Click += new System.EventHandler(this.closeButton_Click);
             // 
-            // webView1
-            // 
-            this.webView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.webView1.Location = new System.Drawing.Point(0, 0);
-            this.webView1.MinimumSize = new System.Drawing.Size(20, 20);
-            this.webView1.Name = "webView1";
-            this.webView1.Size = new System.Drawing.Size(284, 262);
-            this.webView1.TabIndex = 2;
-            // 
             // ScreensaverForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(284, 262);
             this.Controls.Add(this.closeButton);
-            this.Controls.Add(this.webView1);
-            this.ForeColor = System.Drawing.Color.White;
+            this.Controls.Add(this.webBrowser);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ScreensaverForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Form1";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.ScreensaverForm_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.webView1)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
+
+        private System.Windows.Forms.WebBrowser webBrowser;
         private System.Windows.Forms.Button closeButton;
-        private Microsoft.Toolkit.Forms.UI.Controls.WebView webView1;
     }
 }
 

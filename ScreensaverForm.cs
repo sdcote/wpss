@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using Microsoft.Win32;
 using System.Diagnostics;
 
-namespace pl.polidea.lab.Web_Page_Screensaver
+namespace coyote.wpss
 {
     public partial class ScreensaverForm : Form
     {
@@ -18,35 +12,30 @@ namespace pl.polidea.lab.Web_Page_Screensaver
         private int currentSiteIndex = -1;
         private GlobalUserEventHandler userEventHandler;
         private bool shuffleOrder;
-        private List<string> urls;
-
-        private PreferencesManager prefsManager = new PreferencesManager();
-
-        private int screenNum;
+        private string[] urls;
 
         [ThreadStatic]
         private static Random random;
 
-        public ScreensaverForm(int? screenNumber = null)
+        public ScreensaverForm()
         {
             userEventHandler = new GlobalUserEventHandler();
             userEventHandler.Event += new GlobalUserEventHandler.UserEvent(HandleUserActivity);
-
-            if (screenNumber == null) screenNum = prefsManager.EffectiveScreensList.FindIndex(s => s.IsPrimary);
-            else screenNum = (int)screenNumber;
 
             InitializeComponent();
 
             Cursor.Hide();
         }
 
-        public List<string> Urls
+        public string[] Urls
         {
             get
             {
                 if (urls == null)
                 {
-                    urls = prefsManager.GetUrlsByScreen(screenNum);
+                    RegistryKey reg = Registry.CurrentUser.CreateSubKey(Program.KEY);
+                    urls = ((string)reg.GetValue(PreferencesForm.URL_PREF, PreferencesForm.URL_PREF_DEFAULT)).Split(' ');
+                    reg.Close();
                 }
 
                 return urls;
@@ -55,43 +44,38 @@ namespace pl.polidea.lab.Web_Page_Screensaver
 
         private void ScreensaverForm_Load(object sender, EventArgs e)
         {
-            if (Urls.Any())
+            if (Urls.Length > 1)
             {
-                if (Urls.Count > 1)
+                RegistryKey reg = Registry.CurrentUser.CreateSubKey(Program.KEY);
+
+                // Shuffle the URLs if necessary
+                shuffleOrder = Boolean.Parse((string)reg.GetValue(PreferencesForm.RANDOMIZE_PREF, PreferencesForm.RANDOMIZE_PREF_DEFAULT));
+                if (shuffleOrder)
                 {
-                    // Shuffle the URLs if necessary
-                    shuffleOrder = prefsManager.GetRandomizeFlagByScreen(screenNum);
-                    if (shuffleOrder)
+                    random = new Random();
+
+                    int n = urls.Length;
+                    while (n > 1)
                     {
-                        random = new Random();
-
-                        int n = urls.Count;
-                        while (n > 1)
-                        {
-                            n--;
-                            int k = random.Next(n + 1);
-                            var value = urls[k];
-                            urls[k] = urls[n];
-                            urls[n] = value;
-                        }
+                        n--;
+                        int k = random.Next(n + 1);
+                        var value = urls[k];
+                        urls[k] = urls[n];
+                        urls[n] = value;
                     }
-
-                    // Set up timer to rotate to the next URL
-                    timer = new Timer();
-                    timer.Interval = prefsManager.GetRotationIntervalByScreen(screenNum) * 1000;
-                    timer.Tick += (s, ee) => RotateSite();
-                    timer.Start();
                 }
 
-                // Display the first site in the list
-                RotateSite();
+                // Set up timer to rotate to the next URL
+                timer = new Timer();
+                timer.Interval = int.Parse((string)reg.GetValue(PreferencesForm.INTERVAL_PREF, PreferencesForm.INTERVAL_PREF_DEFAULT)) * 1000;
+                timer.Tick += (s, ee) => RotateSite();
+                timer.Start();
+            }
 
-                StartTime = DateTime.Now;
-            }
-            else
-            {
-                webView1.Visible = false;
-            }
+            // Display the first site in the list
+            RotateSite();
+
+            StartTime = DateTime.Now;
         }
 
         private void BrowseTo(string url)
@@ -99,23 +83,16 @@ namespace pl.polidea.lab.Web_Page_Screensaver
             // Disable the user event handler while navigating
             Application.RemoveMessageFilter(userEventHandler);
 
-            if (string.IsNullOrWhiteSpace(url))
+            try
             {
-                webView1.Visible = false;
+                Debug.WriteLine($"Navigating: {url}");
+                webBrowser.Navigate(url);
             }
-            else
+            catch
             {
-                webView1.Visible = true;
-                try
-                {
-                    Debug.WriteLine($"Navigating: {url}");
-                    webView1.Navigate(url);
-                }
-                catch
-                {
-                    // This can happen if IE pops up a window that isn't closed before the next call to Navigate()
-                }
+                // This can happen if IE pops up a window that isn't closed before the next call to Navigate()
             }
+
             Application.AddMessageFilter(userEventHandler);
         }
 
@@ -123,7 +100,7 @@ namespace pl.polidea.lab.Web_Page_Screensaver
         {
             currentSiteIndex++;
 
-            if (currentSiteIndex >= Urls.Count)
+            if (currentSiteIndex >= Urls.Length)
             {
                 currentSiteIndex = 0;
             }
@@ -137,7 +114,9 @@ namespace pl.polidea.lab.Web_Page_Screensaver
         {
             if (StartTime.AddSeconds(1) > DateTime.Now) return;
 
-            if (prefsManager.CloseOnActivity)
+            RegistryKey reg = Registry.CurrentUser.CreateSubKey(Program.KEY);
+
+            if (Boolean.Parse((string)reg.GetValue(PreferencesForm.CLOSE_ON_ACTIVITY_PREF, PreferencesForm.CLOSE_ON_ACTIVITY_PREF_DEFAULT)))
             {
                 Close();
             }
@@ -146,6 +125,8 @@ namespace pl.polidea.lab.Web_Page_Screensaver
                 closeButton.Visible = true;
                 Cursor.Show();
             }
+
+            reg.Close();
         }
 
         private void closeButton_Click(object sender, EventArgs e)
@@ -163,24 +144,14 @@ namespace pl.polidea.lab.Web_Page_Screensaver
         private const int WM_KEYDOWN = 0x100;
         private const int WM_KEYUP = 0x101;
 
-        // screensavers and especially multi-window apps can get spurrious WM_MOUSEMOVE events
-        // that don't actually involve any movement (cursor chnages and some mouse driver software
-        // can generate them, for example) - so we record the actual mouse position and compare against it for actual movement.
-        private Point? lastMousePos;
-
         public event UserEvent Event;
 
         public bool PreFilterMessage(ref Message m)
         {
-            if ((m.Msg == WM_MOUSEMOVE) && (this.lastMousePos == null))
+            if ((m.Msg >= WM_MOUSEMOVE && m.Msg <= WM_MBUTTONDBLCLK)
+                || m.Msg == WM_KEYDOWN
+                || m.Msg == WM_KEYUP)
             {
-                this.lastMousePos = Cursor.Position;
-            }
-
-            if (((m.Msg == WM_MOUSEMOVE) && (Cursor.Position != this.lastMousePos))
-                || (m.Msg > WM_MOUSEMOVE && m.Msg <= WM_MBUTTONDBLCLK) || m.Msg == WM_KEYDOWN || m.Msg == WM_KEYUP)
-            {
-
                 if (Event != null)
                 {
                     Event();
