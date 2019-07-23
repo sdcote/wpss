@@ -24,6 +24,20 @@ To allow the monitor to constantly show the screen saver, make sure the power se
 
 Lock the workstation and allow the screen saver to start. It should no continually cycle through all your configured URLs. You should not have to unlock your workstation again, unless you need to reconfigure the screen saver. It is essentially operating like a web kiosk, allowing you to browse sites although they will automatically cycle to the next URL after the "Seconds to display each site" value has elapsed.
 
+## Installation
+
+Copy `WPSS.scr` to `C:\Windows\System32 ` if you have permission, or place the file in another location.
+
+Right-click the `WPSS.scr` file and chose "Install". You will be taken to the screen saver configuration screen with WPSS set as the screen saver.
+
+Note:  If you delete or move `WPSS.scr`, your screen saver will revert back to "none". It is important to keep the screen saver file in its original location or you will have to re-install it.
+
+## Upgrading
+
+Simply copy `WPSS.scr` over top of the existing file.
+
+Optionally, you can drope the new file in a new location and install it from there.
+
 ## Credits
 
 This is a clone of a project by a similar name ([cwc/web-page-screensaver](https://github.com/cwc/web-page-screensaver)) by Cameron Currie which has since been archived and probably no longer maintained. There were 3 pull requests pending at the time this project was cloned and this project has taken the effective results of each and a few personal updates. See the updates section for details on who made what changes,
