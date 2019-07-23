@@ -19,13 +19,46 @@ namespace coyote.wpss
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            if (args.Length > 0 && args[0].ToLower().Contains("/p"))
-                return;
+            if (args.Length > 0)
+            {
+                string firstArgument = args[0].ToLower().Trim();
+                string secondArgument = null;
 
-            if (args.Length > 0 && args[0].ToLower().Contains("/c"))
+                // Handle cases where arguments are separated by colon.
+                // Examples: /c:1234567 or /P:1234567
+                if (firstArgument.Length > 2)
+                {
+                    secondArgument = firstArgument.Substring(3).Trim();
+                    firstArgument = firstArgument.Substring(0, 2);
+                }
+                else if (args.Length > 1)
+                {
+                    secondArgument = args[1];
+                }
+
+                if (firstArgument == "/c") // Configuration mode
+                {
+                    Application.Run(new PreferencesForm());
+                }
+                else if (firstArgument == "/p") // Preview mode
+                {
+                    // silently ignore
+                }
+                else if (firstArgument == "/s") // Full-screen mode
+                {
+                    // Windows 10 sends /s when "Test" is selected.
+                    Application.Run(new ScreensaverForm());
+                }
+                else    // Undefined argument
+                {
+                    MessageBox.Show("Sorry, but the command line argument \"" + firstArgument + "\" is not valid.\n Args: `" + args + "'", "WPSS", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+            }
+            else // No arguments
+            {
+                // Windows 10 sends no arguments when "Configure" is selected
                 Application.Run(new PreferencesForm());
-            else
-                Application.Run(new ScreensaverForm());
+            }
         }
     }
 }
