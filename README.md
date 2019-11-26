@@ -76,3 +76,46 @@ Started a multi-display version of the project in the `multi_display` branch. Th
 
 Multi-display support may be abandoned since there is no use case for it currently and the existing design seems to have introduced a few bugs on some workstations. 
 
+## Tips
+
+Below are tips in using WPSS to display your teams information.
+
+### Displaying Images
+
+On thing many teams want to do is show Excel charts and graphs on their wall monitor. The challange is determining what size to make the image so it fills the screen on their monitor. Here is what you do:
+
+1. Create your image. Export your Excel charts and other graphics to a shared directory your wall monitor can reach. Try to make your image the same aspect ratio as your monitor (16:9)
+1. Copy the HTML below into a file on a shared directory your wall monitor can reach.
+1. Edit the HTML to reference your image. Test it in your browser.
+1. Update the WPSS to include the URL to the shared directory (e.g., file://C:/shared/status/burndown.html)
+
+This is the HTML to use:
+```html
+<html>
+<head>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        .imgbox {
+            display: grid;
+            height: 100%;
+        }
+        .center-fit {
+            max-width: 100%;
+            max-height: 100vh;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="imgbox">
+    <img class="center-fit" src='image.png'>
+</div>
+</body>
+</html>
+```
+
+In the above HTML, change `image.png` to the location of your image. When the page is rendered, the image will be scaled to 100% of the display. If the image is smaller than the display size, it will scale up and may be pixelated. If the image is larger than the display, it should still remain sharp. Therefore, try to make your image the same aspect ratio and larger than your display to get the best sizing and image quality.
+
